@@ -53,7 +53,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Changes the case of all keys in an array
+     * Changes the case of all keys in the collection
      *
      * @param int $case
      *
@@ -68,7 +68,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Changes the case of all keys in an array to lower case
+     * Changes the case of all keys in the collection to lower case
      *
      * @return static
      *
@@ -77,11 +77,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     public function changeKeyLowerCase(): static
     {
-        return $this->changeKeyCase(CASE_LOWER);
+        return $this->changeKeyCase();
     }
 
     /**
-     * Changes the case of all keys in an array to upper case
+     * Changes the case of all keys in the collection to upper case
      *
      * @return static
      *
@@ -233,13 +233,25 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     public function first(callable $callback = null, mixed $default = null): mixed
     {
-        foreach ($this->data as $key => $value) {
-            if ($callback === null || $callback($value, $key) === true) {
-                return $value;
-            }
-        }
+        return array_first($this->data, $callback, $default);
+    }
 
-        return $default;
+    /**
+     * Gets the first key of the collection.
+     *
+     * If a callback is provided, then returns the first key that causes the callback to return true
+     *
+     * @param callable|null $callback
+     * @param mixed|null $default
+     *
+     * @return int|string|null
+     *
+     * @see array_key_last()
+     * @see https://www.php.net/manual/en/function.array_key_last.php
+     */
+    public function firstKey(callable $callback = null, mixed $default = null): int|string|null
+    {
+        return array_first_key($this->data, $callback, $default);
     }
 
     /**
@@ -356,7 +368,25 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     public function last(callable $callback = null, mixed $default = null): mixed
     {
-        return $this->reverse()->first($callback, $default);
+        return array_last($this->data, $callback, $default);
+    }
+
+    /**
+     * Gets the last key of the collection
+     *
+     * If a callback is provided, then returns the last key that causes the callback to return true
+     *
+     * @param callable|null $callback
+     * @param mixed $default
+     *
+     * @return int|string|null
+     *
+     * @see array_key_last()
+     * @see https://www.php.net/manual/en/function.array_key_last.php
+     */
+    public function lastKey(callable $callback = null, mixed $default = null): int|string|null
+    {
+        return array_last_key($this->data, $callback, $default);
     }
 
     /**
@@ -442,7 +472,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Sort an array in descending order
+     * Sort the collection in descending order
      *
      * @param int $flags
      *
@@ -474,7 +504,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Sort an array in ascending order
+     * Sort the collection in ascending order
      *
      * @param int $flags
      *
@@ -504,6 +534,40 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     {
         $data = $this->data;
         uasort($data, $callback);
+        return new static($data);
+    }
+
+    /**
+     * Sort the collection by key in ascending order
+     *
+     * @param int $flags
+     *
+     * @return static
+     *
+     * @see ksort()
+     * @see https://www.php.net/manual/en/function.ksort.php
+     */
+    public function sortKeys(int $flags = SORT_REGULAR): static
+    {
+        $data = $this->data;
+        ksort($data, $flags);
+        return new static($data);
+    }
+
+    /**
+     * Sort the collection by keys using a user-defined comparison function
+     *
+     * @param callable $callback
+     *
+     * @return static
+     *
+     * @see uksort()
+     * @see https://www.php.net/manual/en/function.uksort.php
+     */
+    public function sortKeysCallback(callable $callback): static
+    {
+        $data = $this->data;
+        uksort($data, $callback);
         return new static($data);
     }
 

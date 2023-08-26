@@ -304,12 +304,36 @@ $collection->exists('c.z'); // false
 
 **[array_key_first](https://www.php.net/manual/en/function.array-key-first.php)** Gets the first key of an array
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection([
+    'a' => 1,
+    'b' => 2,
+    'c' => 3,
+    'd' => 4,
+    'e' => 5,
+]);
+
+$collection->firstKey(); // 'a'
+$collection->firstKey(fn($value, $key) => $value >= 3); // 'c'
+$collection->firstKey(fn($value, $key) => $key != 'a'); // 'b'
 ```
 
 **[array_key_last](https://www.php.net/manual/en/function.array-key-last.php)** Gets the last key of an array
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection([
+    'a' => 1,
+    'b' => 2,
+    'c' => 3,
+    'd' => 4,
+    'e' => 5,
+]);
+
+$collection->lastKey(); // 'e'
+$collection->lastKey(fn($value, $key) => $value >= 3); // 'e'
+$collection->lastKey(fn($value, $key) => $key != 'a'); // 'e'
 ```
 
 **[array_keys](https://www.php.net/manual/en/function.array-keys.php)** Return all the keys or a subset of the keys of an array
@@ -503,9 +527,6 @@ $values = Collection::instance(['a' => 1, 'b' => 2])->values()->getArray(); // [
 // Add documentation
 ```
 
-~~**[array](https://www.php.net/manual/en/function.array.php)** Create an array~~
-
-
 **[arsort](https://www.php.net/manual/en/function.arsort.php)** Sort an array in descending order and maintain index association
 ```php
 use Barogue\Collections\Collection;
@@ -581,17 +602,29 @@ echo Collection::instance('a', 'b', 'c')->implode(', ', ' and '); // "a, b and c
 
 **[krsort](https://www.php.net/manual/en/function.krsort.php)** Sort an array by key in descending order
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection(['a' => 5, 'c' => 4, 'z' => 3, 'b' => 2, 'e' => 1]);
+$sorted = $collection->sortKeys()->reverse(); // ['z' => 3, 'e' => 1, 'c' => 4, 'b' => 2, 'a' => 5]
 ```
 
 **[ksort](https://www.php.net/manual/en/function.ksort.php)** Sort an array by key in ascending order
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection(['a' => 5, 'c' => 4, 'z' => 3, 'b' => 2, 'e' => 1]);
+$sorted = $collection->sortKeys(); // ['a' => 5, 'b' => 2, 'c' => 4, 'e' => 1, 'z' => 3]
 ```
 
 **[list](https://www.php.net/manual/en/function.list.php)** Assign variables as if they were an array
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection(['coffee', 'brown', 'caffeine']);
+list($drink, $color, $power) = $collection;
+echo $drink; // coffee
+echo $color; // brown
+echo $power; // caffeine
 ```
 
 **[natcasesort](https://www.php.net/manual/en/function.natcasesort.php)** Sort an array using a case insensitive "natural order" algorithm
@@ -643,7 +676,11 @@ $collection->reverseSort()->values(); // [9, 5, 1]
 
 **[shuffle](https://www.php.net/manual/en/function.shuffle.php)** Shuffle an array
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection(['a' => 1, 'b' => 2, 'c' => 3]);
+$collection->shuffle(); // ['b' => 2, 'c' => 3, 'a' => 1]
+$collection->shuffle(false); // [3, 1, 2]
 ```
 
 **[sizeof](https://www.php.net/manual/en/function.sizeof.php)** Alias of count
@@ -678,7 +715,14 @@ $collection->sortCallback(function($a, $b) {
 
 **[uksort](https://www.php.net/manual/en/function.uksort.php)** Sort an array by keys using a user-defined comparison function
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection([5, 4, 3, 2, 1]);
+$collection->sortCallback(function($a, $b) {
+    $aEven = $a % 2 == 0 ? 1 : 0;
+    $bEven = $b % 2 == 0 ? 1 : 0;
+    return $aEven === $bEven ? $a <=> $b : $aEven <=> $bEven;
+}); // [1 => 4, 3 => 2, 0 => 5, 2 => 3, 4 => 1]
 ```
 
 **[usort](https://www.php.net/manual/en/function.usort.php)** Sort an array by values using a user-defined comparison function

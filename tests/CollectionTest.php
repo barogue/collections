@@ -341,6 +341,60 @@ class CollectionTest extends TestCase
     }
 
     /**
+     * @covers \Barogue\Collections\Collection::firstKey()
+     */
+    public function testFirstKey()
+    {
+        // No callback, no default, no items
+        $collection = new Collection();
+        $this->assertSame(null, $collection->firstKey());
+
+        // No callback, no default, 1 item
+        $collection = new Collection([10]);
+        $this->assertSame(0, $collection->firstKey());
+
+        // No callback, no default, x items
+        $collection = new Collection(['a' => 10, 'b' => 9, 'c' => 8]);
+        $this->assertSame('a', $collection->firstKey());
+
+        // No callback, yes default, no items
+        $collection = new Collection();
+        $this->assertSame('test', $collection->firstKey(null, 'test'));
+
+        // No callback, yes default, 1 item
+        $collection = new Collection(['a' => 10]);
+        $this->assertSame('a', $collection->firstKey(null, 'test'));
+
+        // No callback, yes default, x items
+        $collection = new Collection(['a' => 10, 'b' => 9, 'c' => 8]);
+        $this->assertSame('a', $collection->firstKey(null, 'test'));
+
+        // Callback that fails to match anything, no default
+        $collection = new Collection([1, 2, 3, 4]);
+        $this->assertSame(null, $collection->firstKey(function ($value) {
+            return $value > 10;
+        }));
+
+        // Callback that fails to match anything, with default
+        $collection = new Collection([1, 2, 3, 4]);
+        $this->assertSame('test', $collection->firstKey(function ($value) {
+            return $value > 10;
+        }, 'test'));
+
+        // Callback that matches on value
+        $collection = new Collection([1, 2, 3, 4]);
+        $this->assertSame(2, $collection->firstKey(function ($value) {
+            return $value > 2;
+        }));
+
+        // Callback that matches on key
+        $collection = new Collection([1, 2, 3, 4]);
+        $this->assertSame(3, $collection->firstKey(function ($value, $key) {
+            return $key > 2;
+        }));
+    }
+
+    /**
      * @covers \Barogue\Collections\Collection::flip()
      */
     public function testFlip()
@@ -574,6 +628,60 @@ class CollectionTest extends TestCase
         $collection = new Collection([9 => 1, 8 => 2,  7 => 3, 6 => 4]);
         $this->assertSame(3, $collection->last(function ($value, $key) {
             return $key > 6;
+        }));
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::lastKey()
+     */
+    public function testLastKey()
+    {
+        // No callback, no default, no items
+        $collection = new Collection();
+        $this->assertSame(null, $collection->lastKey());
+
+        // No callback, no default, 1 item
+        $collection = new Collection([10]);
+        $this->assertSame(0, $collection->lastKey());
+
+        // No callback, no default, x items
+        $collection = new Collection([10, 9, 8]);
+        $this->assertSame(2, $collection->lastKey());
+
+        // No callback, yes default, no items
+        $collection = new Collection();
+        $this->assertSame('test', $collection->lastKey(null, 'test'));
+
+        // No callback, yes default, 1 item
+        $collection = new Collection([10]);
+        $this->assertSame(0, $collection->lastKey(null, 'test'));
+
+        // No callback, yes default, x items
+        $collection = new Collection([10, 9, 8]);
+        $this->assertSame(2, $collection->lastKey(null, 'test'));
+
+        // Callback that fails to match anything, no default
+        $collection = new Collection([1, 2, 3, 4]);
+        $this->assertSame(null, $collection->lastKey(function ($value) {
+            return $value > 10;
+        }));
+
+        // Callback that fails to match anything, with default
+        $collection = new Collection([1, 2, 3, 4]);
+        $this->assertSame('test', $collection->lastKey(function ($value) {
+            return $value > 10;
+        }, 'test'));
+
+        // Callback that matches on value
+        $collection = new Collection([1, 2, 3, 4]);
+        $this->assertSame(2, $collection->lastKey(function ($value) {
+            return $value < 4;
+        }));
+
+        // Callback that matches on key
+        $collection = new Collection([1, 2, 3, 4]);
+        $this->assertSame(3, $collection->lastKey(function ($value, $key) {
+            return $key < 4;
         }));
     }
 
@@ -813,6 +921,28 @@ class CollectionTest extends TestCase
     }
 
     /**
+     * @covers \Barogue\Collections\Collection::shuffle()
+     */
+    public function testShuffle()
+    {
+        $collection = new Collection([
+            'a' => 5,
+            'b' => 4,
+            'c' => 3,
+            'd' => 2,
+            'e' => 1,
+        ]);
+        srand(1);
+        $this->assertSame([
+            'b' => 4,
+            'c' => 3,
+            'e' => 1,
+            'd' => 2,
+            'a' => 5,
+        ], $collection->shuffle()->getArray());
+    }
+
+    /**
      * @covers \Barogue\Collections\Collection::sort()
      */
     public function testSort()
@@ -821,6 +951,34 @@ class CollectionTest extends TestCase
         $sorted = $collection->sort();
         $this->assertSame([4 => 1, 3 => 2, 2 => 3, 1 => 4, 0 => 5], $sorted->getArray());
         $this->assertSame([1, 2, 3, 4, 5], $sorted->values()->getArray());
+        $this->assertSame([5, 4, 3, 2, 1], $collection->getArray());
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::sortKeys()
+     */
+    public function testSortKeys()
+    {
+        $collection = new Collection(['a' => 5, 'c' => 4, 'z' => 3, 'b' => 2, 'e' => 1]);
+        $sorted = $collection->sortKeys();
+        $this->assertSame(['a' => 5, 'b' => 2, 'c' => 4, 'e' => 1, 'z' => 3], $sorted->getArray());
+        $this->assertSame([5, 2, 4, 1, 3], $sorted->values()->getArray());
+        $this->assertSame(['a' => 5, 'c' => 4, 'z' => 3, 'b' => 2, 'e' => 1], $collection->getArray());
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::sortKeysCallback()
+     */
+    public function testSortKeysWithCallback()
+    {
+        $collection = new Collection([5, 4, 3, 2, 1]);
+        $sorted = $collection->sortKeysCallback(function ($a, $b) {
+            $aEven = $a % 2 == 0 ? 1 : 0;
+            $bEven = $b % 2 == 0 ? 1 : 0;
+            return $aEven === $bEven ? $a <=> $b : $aEven <=> $bEven;
+        });
+        $this->assertSame([1 => 4, 3 => 2, 0 => 5, 2 => 3, 4 => 1], $sorted->getArray());
+        $this->assertSame([4, 2, 5, 3, 1], $sorted->values()->getArray());
         $this->assertSame([5, 4, 3, 2, 1], $collection->getArray());
     }
 
@@ -875,24 +1033,14 @@ class CollectionTest extends TestCase
     }
 
     /**
-     * @covers \Barogue\Collections\Collection::shuffle()
+     * @covers \Barogue\Collections\Collection::__construct()
      */
-    public function testShuffle()
+    public function testWorksWithList()
     {
-        $collection = new Collection([
-            'a' => 5,
-            'b' => 4,
-            'c' => 3,
-            'd' => 2,
-            'e' => 1,
-        ]);
-        srand(1);
-        $this->assertSame([
-            'b' => 4,
-            'c' => 3,
-            'e' => 1,
-            'd' => 2,
-            'a' => 5,
-        ], $collection->shuffle()->getArray());
+        $collection = new Collection(['coffee', 'brown', 'caffeine']);
+        list($drink, $color, $power) = $collection;
+        $this->assertSame('coffee', $drink);
+        $this->assertSame('brown', $color);
+        $this->assertSame('caffeine', $power);
     }
 }

@@ -10,11 +10,29 @@ class CollectionTest extends TestCase
     /**
      * @covers \Barogue\Collections\Collection::changeKeyCase()
      */
-    public function testChangeCase()
+    public function testChangeKeyCase()
     {
         $collection = new Collection(['FirSt' => 1, 'SecOnd' => 4]);
         $this->assertSame(['first' => 1, 'second' => 4], $collection->changeKeyCase(CASE_LOWER)->getArray());
         $this->assertSame(['FIRST' => 1, 'SECOND' => 4], $collection->changeKeyCase(CASE_UPPER)->getArray());
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::changeKeyLowerCase()
+     */
+    public function testChangeKeyLowerCase()
+    {
+        $collection = new Collection(['FirSt' => 1, 'SecOnd' => 4]);
+        $this->assertSame(['first' => 1, 'second' => 4], $collection->changeKeyLowerCase()->getArray());
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::changeKeyUpperCase()
+     */
+    public function testChangeKeyUpperCase()
+    {
+        $collection = new Collection(['FirSt' => 1, 'SecOnd' => 4]);
+        $this->assertSame(['FIRST' => 1, 'SECOND' => 4], $collection->changeKeyUpperCase()->getArray());
     }
 
     /**

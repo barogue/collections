@@ -68,6 +68,32 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
+     * Changes the case of all keys in an array to lower case
+     *
+     * @return static
+     *
+     * @see array_change_key_case()
+     * @see Collection::changeKeyCase()
+     */
+    public function changeKeyLowerCase(): static
+    {
+        return $this->changeKeyCase(CASE_LOWER);
+    }
+
+    /**
+     * Changes the case of all keys in an array to upper case
+     *
+     * @return static
+     *
+     * @see array_change_key_case()
+     * @see Collection::changeKeyCase()
+     */
+    public function changeKeyUpperCase(): static
+    {
+        return $this->changeKeyCase(CASE_UPPER);
+    }
+
+    /**
      * Split the collection into chunks
      *
      * @param int $length

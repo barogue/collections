@@ -139,6 +139,9 @@ $collection = new Collection(["FirSt" => 1, "SecOnd" => 4]);
 
 $collection->changeKeyCase(CASE_UPPER); // ["FIRST" => 1, "SECOND" => 4]
 $collection->changeKeyCase(CASE_LOWER); // ["first" => 1, "second" => 4]
+
+$collection->changeKeyUpperCase(); // ["FIRST" => 1, "SECOND" => 4]
+$collection->changeKeyLowerCase(); // ["first" => 1, "second" => 4]
 ```
 
 **[array_chunk](https://www.php.net/manual/en/function.array-chunk.php)** Split an array into chunks

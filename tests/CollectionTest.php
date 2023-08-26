@@ -95,6 +95,60 @@ class CollectionTest extends TestCase
     }
 
     /**
+     * @covers \Barogue\Collections\Collection::column()
+     */
+    public function testColumnIntegerKeys()
+    {
+        $collection = new Collection([
+            'player_1' => [
+                'stats' => [
+                    'name' => 'John',
+                    'hp' => 50,
+                    'exp' => 1000
+                ],
+                3 => 'hello 3',
+                4 => 'hello 4',
+            ],
+            'player_2' => [
+                'stats' => [
+                    'name' => 'Jane',
+                    'hp' => 70,
+                    'exp' => 1000
+                ],
+                3 => 'goodbye 3',
+                4 => 'goodbye 4',
+            ]
+        ]);
+        $this->assertSame(['hello 3', 'goodbye 3'], $collection->column(3)->getArray());
+        $this->assertSame(['hello 4' => 50, 'goodbye 4' => 70], $collection->column('stats.hp', 4)->getArray());
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::column()
+     */
+    public function testColumnNested()
+    {
+        $collection = new Collection([
+            'player_1' => [
+                'stats' => [
+                    'name' => 'John',
+                    'hp' => 50,
+                    'exp' => 1000
+                ]
+            ],
+            'player_2' => [
+                'stats' => [
+                    'name' => 'Jane',
+                    'hp' => 70,
+                    'exp' => 1000
+                ]
+            ]
+        ]);
+        $this->assertSame([50, 70], $collection->column('stats.hp')->getArray());
+        $this->assertSame(['John' => 50, 'Jane' => 70], $collection->column('stats.hp', 'stats.name')->getArray());
+    }
+
+    /**
      * @covers \Barogue\Collections\Collection::__construct()
      */
     public function testConstructorWithNoParameter()

@@ -122,7 +122,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     public function column(int|string $key, int|string $index = null): static
     {
-        return new static(array_column($this->data, $key, $index));
+        if (!str_contains($key, '.') && !str_contains($index, '.')) {
+            return new static(array_column($this->data, $key, $index));
+        }
+        return new static(array_column(array_map('array_deflate', $this->data), $key, $index));
     }
 
     /**

@@ -159,17 +159,21 @@ use Barogue\Collections\Collection;
 $collection = new Collection([
     'player_1' => [
         'name' => 'John',
-        'hp' => 50,
-        'exp' => 1000
+        'stats' => [
+            'hp' => 50,
+            'exp' => 1000
+        ]
     ],
     'player_2' => [
         'name' => 'Jane',
-        'hp' => 70,
-        'exp' => 1000
+        'stats' => [
+            'hp' => 70,
+            'exp' => 1000
+        ]
     ]
 ]);
-$hps = $collection->column('hp'); // [50, 70]
-$hps = $collection->column('hp', 'name'); // ['John' => 50, 'Jane' => 70]
+$hps = $collection->column('stats.hp'); // [50, 70]
+$hps = $collection->column('stats.hp', 'name'); // ['John' => 50, 'Jane' => 70]
 ```
 
 **[array_combine](https://www.php.net/manual/en/function.array-combine.php)** Creates an array by using one array for keys and another for its values

@@ -6,6 +6,8 @@ use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
+use JsonSerializable;
+use Traversable;
 
 class Collection implements ArrayAccess, Countable, IteratorAggregate
 {
@@ -17,21 +19,55 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     protected array $data = [];
 
     /**
-     * @param array $data
+     * @param mixed $data
      */
-    public function __construct(array $data = [])
+    public function __construct(mixed $data = [])
     {
-        $this->data = $data;
+        $this->data = static::convertToArray($data);
+    }
+
+    /**
+     * Convert a data type to an array
+     *
+     * @param mixed $anything
+     *
+     * @return array
+     */
+    public static function convertToArray(mixed $anything): array
+    {
+        if (is_array($anything)) {
+            return $anything;
+        }
+
+        return match (true) {
+            $anything instanceof Traversable => iterator_to_array($anything),
+            $anything instanceof JsonSerializable => (array) $anything->jsonSerialize(),
+            default => (array) $anything,
+        };
+    }
+
+    /**
+     * Calculate the factorial of a number using reduce
+     *
+     * @param int $amount
+     *
+     * @return int
+     *
+     * @see Collection::reduce()
+     */
+    public static function factorial(int $amount): int
+    {
+        return static::range($amount, 1)->reduce(fn ($c, $v) => $c * $v, 1);
     }
 
     /**
      * Chainable constructor
      *
-     * @param array $data
+     * @param mixed $data
      *
      * @return static
      */
-    public static function instance(array $data = []): static
+    public static function instance(mixed $data = []): static
     {
         return new static($data);
     }
@@ -126,6 +162,19 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
             return new static(array_column($this->data, $key, $index));
         }
         return new static(array_column(array_map('array_deflate', $this->data), $key, $index));
+    }
+
+    /**
+     * Create a collection by using this collection for keys and another for its values.
+     *
+     *
+     * @param $other
+     *
+     * @return static
+     */
+    public function combine($other): static
+    {
+        return new static(array_combine($this->data, static::convertToArray($other)));
     }
 
     /**
@@ -462,6 +511,50 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     public function offsetUnset($offset): void
     {
         array_unset($this->data, $offset);
+    }
+
+    /**
+     * Get a random key from the collection
+     *
+     * @return string|array|int
+     *
+     * @see array_rand()
+     * @see https://www.php.net/manual/en/function.array-rand.php
+     */
+    public function randomKey(): string|array|int
+    {
+        return array_rand($this->data);
+    }
+
+    /**
+     * Get a collection of random keys from the collection
+     *
+     * @param int $amount
+     *
+     * @return static
+     *
+     * @see array_rand()
+     * @see https://www.php.net/manual/en/function.array-rand.php
+     */
+    public function randomKeys(int $amount): static
+    {
+        return new Collection(array_rand($this->data, $amount));
+    }
+
+    /**
+     * Sort the collection in descending order
+     *
+     * @param callable $callback
+     * @param mixed|null $initial
+     *
+     * @return mixed
+     *
+     * @see array_reduce()
+     * @see https://www.php.net/manual/en/function.array-reduce.php
+     */
+    public function reduce(callable $callback, mixed $initial = null): mixed
+    {
+        return array_reduce($this->data, $callback, $initial);
     }
 
     /**

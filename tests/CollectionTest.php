@@ -2,11 +2,27 @@
 
 namespace Barogue\Collections\Tests;
 
+use ArrayIterator;
 use Barogue\Collections\Collection;
 use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
+    /**
+     * Data provider for different data conversions
+     *
+     * @return array[]
+     */
+    public static function providesConversions(): array
+    {
+        return [
+            'nothing' => [null, []],
+            'array' => [[1, 2, 3], [1, 2, 3]],
+            'collection' => [new Collection([1, 2, 3]), [1, 2, 3]],
+            'array-iterator' => [new ArrayIterator([1, 2, 3]), [1, 2, 3]],
+        ];
+    }
+
     /**
      * @covers \Barogue\Collections\Collection::changeKeyCase()
      */
@@ -149,26 +165,46 @@ class CollectionTest extends TestCase
     }
 
     /**
-     * @covers \Barogue\Collections\Collection::__construct()
+     * @covers \Barogue\Collections\Collection::combine()
+     *
+     * @dataProvider providesConversions()
      */
-    public function testConstructorWithNoParameter()
+    public function testCombine($input, $output)
     {
-        $collection = new Collection();
-        $this->assertEmpty($collection);
-        $this->assertCount(0, $collection);
+        if ($input !== null) {
+            $this->assertSame(array_combine([9, 8, 7], $output), Collection::instance([9, 8, 7])->combine($input)->getArray());
+        } else {
+            $this->assertTrue(true);
+        }
     }
 
     /**
      * @covers \Barogue\Collections\Collection::__construct()
+     *
+     * @dataProvider providesConversions()
      */
-    public function testConstructorWithParameter()
+    public function testConstructor($input, $output)
     {
-        $collection = new Collection([1, 2, 3]);
-        $this->assertNotEmpty($collection);
-        $this->assertCount(3, $collection);
-        $this->assertSame(1, $collection[0]);
-        $this->assertSame(2, $collection[1]);
-        $this->assertSame(3, $collection[2]);
+        $collection = new Collection($input);
+        if (empty($output)) {
+            $this->assertEmpty($collection);
+        } else {
+            $this->assertNotEmpty($collection);
+        }
+        $this->assertCount(count($output), $collection);
+        foreach ($output as $key => $value) {
+            $this->assertSame($value, $collection[$key]);
+        }
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::convertToArray()
+     *
+     * @dataProvider providesConversions()
+     */
+    public function testConvertToArray($input, $output)
+    {
+        $this->assertSame($output, Collection::convertToArray($input));
     }
 
     /**
@@ -546,25 +582,21 @@ class CollectionTest extends TestCase
 
     /**
      * @covers \Barogue\Collections\Collection::instance()
+     *
+     * @dataProvider providesConversions()
      */
-    public function testInstanceWithNoParameter()
+    public function testInstance($input, $output)
     {
-        $collection = Collection::instance();
-        $this->assertEmpty($collection);
-        $this->assertCount(0, $collection);
-    }
-
-    /**
-     * @covers \Barogue\Collections\Collection::instance()
-     */
-    public function testInstanceWithParameter()
-    {
-        $collection = Collection::instance([1, 2, 3]);
-        $this->assertNotEmpty($collection);
-        $this->assertCount(3, $collection);
-        $this->assertSame(1, $collection[0]);
-        $this->assertSame(2, $collection[1]);
-        $this->assertSame(3, $collection[2]);
+        $collection = Collection::instance($input);
+        if (empty($output)) {
+            $this->assertEmpty($collection);
+        } else {
+            $this->assertNotEmpty($collection);
+        }
+        $this->assertCount(count($output), $collection);
+        foreach ($output as $key => $value) {
+            $this->assertSame($value, $collection[$key]);
+        }
     }
 
     /**
@@ -920,6 +952,24 @@ class CollectionTest extends TestCase
     }
 
     /**
+     * @covers \Barogue\Collections\Collection::randomKey()
+     */
+    public function testRandomKey()
+    {
+        srand(1);
+        $this->assertSame('dog', Collection::instance(['cat' => 1, 'dog' => 2, 'bird' => 3])->randomKey());
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::randomKeys()
+     */
+    public function testRandomKeys()
+    {
+        srand(1);
+        $this->assertSame(['cat', 'bird'], Collection::instance(['cat' => 1, 'dog' => 2, 'bird' => 3])->randomKeys(2)->getArray());
+    }
+
+    /**
      * @covers \Barogue\Collections\Collection::range()
      */
     public function testRange()
@@ -928,6 +978,23 @@ class CollectionTest extends TestCase
         $this->assertSame(range(1, 100, 20), Collection::range(1, 100, 20)->getArray());
         $this->assertSame(range('a', 'z'), Collection::range('a', 'z')->getArray());
         $this->assertSame([0, 2, 4, 6, 8, 10], Collection::range(0, 10, 2)->getArray());
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::reduce()
+     * @covers \Barogue\Collections\Collection::factorial()
+     */
+    public function testReduce()
+    {
+        // Without an initial value
+        $this->assertSame(15, Collection::instance([1, 2, 3, 4, 5])->reduce(fn ($carry, $value) => $carry + $value));
+
+        // With an initial value
+        $this->assertSame(5, Collection::instance([1, 2, 3, 4, 5])->reduce(fn ($carry, $value) => $carry + $value, -10));
+
+        // 10 factorial
+        $this->assertSame(3628800, Collection::range(10, 1)->reduce(fn ($carry, $value) => $carry * $value, 1));
+        $this->assertSame(3628800, Collection::factorial(10));
     }
 
     /**

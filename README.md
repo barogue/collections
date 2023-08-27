@@ -178,7 +178,13 @@ $hps = $collection->column('stats.hp', 'name'); // ['John' => 50, 'Jane' => 70]
 
 **[array_combine](https://www.php.net/manual/en/function.array-combine.php)** Creates an array by using one array for keys and another for its values
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$keys = new Collection(['a', 'b', 'c']);
+$combined = $keys->combine(1, 2, 3); // ['a' => 1, 'b' => 2, 'c' => 3]
+
+
+$combined = Collection::instance(['a', 'b', 'c'])->combine(1, 2, 3); // ['a' => 1, 'b' => 2, 'c' => 3]
 ```
 
 **[array_count_values](https://www.php.net/manual/en/function.array-count-values.php)** Counts all the values of an array
@@ -415,12 +421,24 @@ $concatenatedKeys = $collection->map(function ($value, $key) {
 
 **[array_rand](https://www.php.net/manual/en/function.array-rand.php)** Pick one or more random keys out of an array
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection([
+    'a' => 1,
+    'b' => 2,
+    'c' => 3
+]);
+
+$collection->randomKey(); // 'b'
+$collection->randomKeys(2)->getArray(); // ['c', 'a']
 ```
 
 **[array_reduce](https://www.php.net/manual/en/function.array-reduce.php)** Iteratively reduce the array to a single value using a callback function
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$factorial = Collection::range(10, 1)->reduce(fn($carry, $value) => $carry * $value, 1)
+$factorial = Collection::factorial(10)
 ```
 
 **[array_replace_recursive](https://www.php.net/manual/en/function.array-replace-recursive.php)** Replaces elements from passed arrays into the first array recursively

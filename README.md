@@ -121,6 +121,12 @@ $collection[] = 4;
 $collection['test'] = 5;
 echo $collection[1]; // 2 
 
+// Get the original array
+$collection->getArray();
+
+// Get an iterator
+$collection->getIterator();
+
 // Getting the size of the collection
 echo count($collection); // 5
 echo $collection->count(); // 5

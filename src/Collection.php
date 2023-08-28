@@ -514,6 +514,38 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
+     * Remove element/s from the end of the collection.
+     * Returns the element/s that were removed.
+     *
+     * @param int $count
+     *
+     * @return Collection|mixed
+     */
+    public function pop(int $count = 1): mixed
+    {
+        if ($count === 1) {
+            return array_pop($this->data);
+        }
+        $popped = array_pop_many($this->data, $count);
+        return is_array($popped) ? new Collection($popped) : null;
+    }
+
+    /**
+     * Push one or more items onto the array
+     *
+     * @param ...$values
+     *
+     * @return static
+     */
+    public function push(...$values): static
+    {
+        foreach ($values as $value) {
+            $this->data[] = $value;
+        }
+        return $this;
+    }
+
+    /**
      * Get a random key from the collection
      *
      * @return string|array|int
@@ -582,6 +614,23 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
         $data = $this->data;
         arsort($data, $flags);
         return new static($data);
+    }
+
+    /**
+     * Remove element/s from the beginning of the collection.
+     * Returns the element/s that were removed.
+     *
+     * @param int $count
+     *
+     * @return Collection|mixed
+     */
+    public function shift(int $count = 1): mixed
+    {
+        if ($count === 1) {
+            return array_shift($this->data);
+        }
+        $shifted = array_shift_many($this->data, $count);
+        return is_array($shifted) ? new Collection($shifted) : null;
     }
 
     /**

@@ -952,6 +952,72 @@ class CollectionTest extends TestCase
     }
 
     /**
+     * @covers \Barogue\Collections\Collection::pop()
+     */
+    public function testPop()
+    {
+        // Pop <= 1
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $popped = $collection->pop(0);
+        $this->assertSame(null, $popped);
+        $this->assertSame([1, 2, 3, 4, 5], $collection->getArray());
+
+        // Pop more than in the collection
+        $collection = new Collection([1, 2, 3]);
+        $popped = $collection->pop(5);
+        $this->assertSame([3, 2, 1, null, null], $popped->getArray());
+        $this->assertSame([], $collection->getArray());
+
+        // Pop 1
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $popped = $collection->pop();
+        $this->assertSame(5, $popped);
+        $this->assertSame([1, 2, 3, 4], $collection->getArray());
+
+        // Pop most
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $popped = $collection->pop(3);
+        $this->assertSame([5, 4, 3], $popped->getArray());
+        $this->assertSame([1, 2], $collection->getArray());
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::push()
+     */
+    public function testPush()
+    {
+        $collection = new Collection([
+            'a' => 1,
+            'b' => 2,
+            'c' => 3,
+        ]);
+
+        $collection->push('test');
+        $this->assertCount(4, $collection);
+        $this->assertSame([
+            'a' => 1,
+            'b' => 2,
+            'c' => 3,
+            0 => 'test'
+        ], $collection->getArray());
+
+        $collection->push('hello', 'how', 'are', ['you' => '?']);
+        $this->assertCount(8, $collection);
+        $this->assertSame([
+            'a' => 1,
+            'b' => 2,
+            'c' => 3,
+            0 => 'test',
+            1 => 'hello',
+            2 => 'how',
+            3 => 'are',
+            4 => [
+                'you' => '?'
+            ],
+        ], $collection->getArray());
+    }
+
+    /**
      * @covers \Barogue\Collections\Collection::randomKey()
      */
     public function testRandomKey()
@@ -1039,6 +1105,36 @@ class CollectionTest extends TestCase
                 ]
             ]
         ], iterator_to_array($collection));
+    }
+
+    /**
+     * @covers \Barogue\Collections\Collection::shift()
+     */
+    public function testShift()
+    {
+        // Shift <= 1
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $shifted = $collection->shift(0);
+        $this->assertSame(null, $shifted);
+        $this->assertSame([1, 2, 3, 4, 5], $collection->getArray());
+
+        // Shift more than in the collection
+        $collection = new Collection([1, 2, 3]);
+        $shifted = $collection->shift(5);
+        $this->assertSame([1, 2, 3, null, null], $shifted->getArray());
+        $this->assertSame([], $collection->getArray());
+
+        // Shift 1
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $shifted = $collection->shift();
+        $this->assertSame(1, $shifted);
+        $this->assertSame([2, 3, 4, 5], $collection->getArray());
+
+        // Shift most
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $shifted = $collection->shift(3);
+        $this->assertSame([1, 2, 3], $shifted->getArray());
+        $this->assertSame([4, 5], $collection->getArray());
     }
 
     /**

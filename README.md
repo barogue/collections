@@ -412,7 +412,11 @@ $concatenatedKeys = $collection->map(function ($value, $key) {
 
 **[array_pop](https://www.php.net/manual/en/function.array-pop.php)** Pop the element off the end of array
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection([1, 2, 3, 4, 5, 6, 7, 8]);
+$single = $collection->pop(); // 8
+$multiple = $collection->pop(4)->getArray(); // [7, 6, 5, 4]
 ```
 
 **[array_product](https://www.php.net/manual/en/function.array-product.php)** Calculate the product of values in an array
@@ -422,7 +426,11 @@ $concatenatedKeys = $collection->map(function ($value, $key) {
 
 **[array_push](https://www.php.net/manual/en/function.array-push.php)** Push one or more elements onto the end of array
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection();
+$collection->push('test'); // ['test']
+$collection->push(1, 2, 3, 4, 5, 6);  // ['test', 1, 2, 3, 4, 5]
 ```
 
 **[array_rand](https://www.php.net/manual/en/function.array-rand.php)** Pick one or more random keys out of an array
@@ -477,7 +485,11 @@ $reversedCopy = $collection->reverse(); // ['c' => 3, 'b' => 2, 'a' => 1]
 
 **[array_shift](https://www.php.net/manual/en/function.array-shift.php)** Shift an element off the beginning of array
 ```php
-// Add documentation
+use Barogue\Collections\Collection;
+
+$collection = new Collection([1, 2, 3, 4, 5, 6, 7, 8]);
+$single = $collection->shift(); // 1
+$multiple = $collection->shift(4)->getArray(); // [2, 3, 4, 5]
 ```
 
 **[array_slice](https://www.php.net/manual/en/function.array-slice.php)** Extract a slice of the array
@@ -596,11 +608,6 @@ $collection->count(); // 3
 // Add documentation
 ```
 
-**[end](https://www.php.net/manual/en/function.end.php)** Set the internal pointer of an array to its last element
-```php
-// Add documentation
-```
-
 **[extract](https://www.php.net/manual/en/function.extract.php)** Import variables into the current symbol table from an array
 ```php
 // Add documentation
@@ -614,16 +621,6 @@ echo Collection::instance('a', 'b', 'c')->implode(', ', ' and '); // "a, b and c
 ```
 
 **[in_array](https://www.php.net/manual/en/function.in-array.php)** Checks if a value exists in an array
-```php
-// Add documentation
-```
-
-**[key_exists](https://www.php.net/manual/en/function.key-exists.php)** Alias of array_key_exists
-```php
-// Add documentation
-```
-
-**[key](https://www.php.net/manual/en/function.key.php)** Fetch a key from an array
 ```php
 // Add documentation
 ```
@@ -665,21 +662,6 @@ echo $power; // caffeine
 // Add documentation
 ```
 
-**[next](https://www.php.net/manual/en/function.next.php)** Advance the internal pointer of an array
-```php
-// Add documentation
-```
-
-**[pos](https://www.php.net/manual/en/function.pos.php)** Alias of current
-```php
-// Add documentation
-```
-
-**[prev](https://www.php.net/manual/en/function.prev.php)** Rewind the internal array pointer
-```php
-// Add documentation
-```
-
 **[range](https://www.php.net/manual/en/function.range.php)** Create an array containing a range of elements
 ```php
 use Barogue\Collections\Collection;
@@ -687,11 +669,6 @@ use Barogue\Collections\Collection;
 $numbers = Collection::range(0, 100);
 $even = Collection::range(0, 100, 2);
 $alphabet = Collection::range('a', 'z');
-```
-
-**[reset](https://www.php.net/manual/en/function.reset.php)** Set the internal pointer of an array to its first element
-```php
-// Add documentation
 ```
 
 **[rsort](https://www.php.net/manual/en/function.rsort.php)** Sort an array in descending order

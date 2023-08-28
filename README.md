@@ -51,7 +51,7 @@ vendor/bin/phpunit
 
 #### Code sniffer
 
-Before pushing, please ensure you have run the code sniffer. **Only run it using the lowest support PHP version (7.2)**
+Before pushing, please ensure you have run the code sniffer. **Only run it using the lowest support PHP version (8.1)**
 
 ```bash
 vendor/bin/php-cs-fixer fix
